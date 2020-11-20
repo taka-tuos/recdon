@@ -208,7 +208,9 @@ void stream_event_update(struct json_object *jobj_from_string)
 	//puts(src);
 	puts(dst);
 	
-	char *dst2 = strdup(dst);
+	char dst2[4096];
+	
+	strcpy(dst2,dst);
 	
 	char *head = strtok(dst2," ");
 	
@@ -221,7 +223,8 @@ void stream_event_update(struct json_object *jobj_from_string)
 		
 		char cmd[4096];
 		
-		sprintf(cmd, "echo \"ffmpeg -f alsa -ac 1 -thread_queue_size 8192 -i hw:1,0 -f v4l2 -thread_queue_size 8192 -s 640x480 -i /dev/video0 -c:v h264 -b:v 768k -c:a aac -t %s /mnt/rec/%s\" | at -t %s\n",len,nam,tim);
+		//sprintf(cmd, "echo \"ffmpeg -f alsa -ac 1 -thread_queue_size 8192 -i hw:1,0 -f v4l2 -thread_queue_size 8192 -s 640x480 -i /dev/video0 -c:v h264 -b:v 768k -c:a aac -t %s /mnt/rec/%s\" | at -t %s\n",len,nam,tim);
+		sprintf(cmd, "echo \"ffmpeg -f v4l2 -thread_queue_size 8192 -video_size 640x480 -channel 1 -i /dev/video0 -f alsa -thread_queue_size 8192 -channels 2 -sample_rate 44100 -i hw:0,0 -t %s -threads 0 /opt/8server/rec/%s\" | at -t %s\n",len,nam,tim);
 		
 		do_toot(cmd);
 		
